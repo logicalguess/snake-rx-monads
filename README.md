@@ -137,3 +137,4 @@ we replay all the steps  with each move. A BehaviorSubject or ReplaySubject can 
 
 The reactive version is pretty much "pull free", all the values get pushed, there is no direct reading from vars.
 A nice JavaScript (Bacon) version  of the snake game can be found here: http://philipnilsson.github.io/badness/ .
+Perhaps RX seems can be a great alternative to state monads.
