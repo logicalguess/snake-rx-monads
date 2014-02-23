@@ -9,7 +9,7 @@ from https://github.com/globulon/akka-snake and https://github.com/dgalichet/Sta
 
 GameStateVars.scala
 
-     var snake: Snake = _
+      var snake: Snake = _
       var apple: Apple = _
       reset()
 
