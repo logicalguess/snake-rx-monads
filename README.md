@@ -96,7 +96,7 @@ GameStateRX.scala
 
 GameStateMonad.scala
 
-     var playground: Playground = _
+      var playground: Playground = _
       var state: State[Playground, Score] = _
 
       def reset(snakeOpt: Option[Snake]) {
