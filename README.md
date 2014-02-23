@@ -1,11 +1,11 @@
-The Snake Game with RX and Monads
+#The Snake Game with RX and Monads
 
 This is an experiment in comparing 3 approaches for managing state: plain functional, RX and state monads. Reusing code
 from https://github.com/globulon/akka-snake and https://github.com/dgalichet/StateMonadSample .
 
 ![ ](screenshot.png)
 
-#Functional
+##Functional
 
 GameStateVars.scala
 
@@ -39,7 +39,7 @@ GameStateVars.scala
         snake = withSnake.go(to)
       }
 
-#Reactive
+##Reactive
 
 GameStateRX.scala
 
@@ -92,7 +92,7 @@ GameStateRX.scala
         def head: WorldLocation = body.head
       }
 
-#State Monad
+##State Monad
 
 GameStateMonad.scala
 
@@ -125,7 +125,7 @@ GameStateMonad.scala
           notifyListener(state.run(playground)._1)
         }
       }
-#Conclusions
+##Conclusions
 
 The functional version uses immutable data structures to represent the snake and apple, but is also using vars that
 get reassigned. It can definitely be made more functional (see here: https://gist.github.com/mslinn/1314819)
