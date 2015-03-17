@@ -13,7 +13,6 @@ import scala.swing.event.KeyPressed
   case class ReceivedPressed(keyCode: Value)
 
   class BoardDriver(model: ActorRef) extends Actor {
-    import GraphicConverters._
     import World._
 
     val directions = Map[Value, WorldLocation](
@@ -43,7 +42,7 @@ class ModelListener extends Actor {
 
 class Board(handle: => (Value) => Unit ) extends Panel {
   var doPaint: ((Graphics2D) => Unit) = (onGraphics) => {}
-  preferredSize = new Dimension(GraphicConverters.converted(World.width), GraphicConverters.converted(World.heigth))
+  preferredSize = new Dimension(GraphicConverters.converted(World.width), GraphicConverters.converted(World.height))
   focusable = true
 
   override def paintComponent(onGraphic: Graphics2D) {
@@ -91,7 +90,7 @@ class GameC(model: ActorRef, val view: Board) extends SimpleSwingApplication {
         def actionPerformed(e: ActionEvent) {
           model ! Refresh()
         }
-      }).start();
+      }).start()
       contents += view
     }
     pack()

@@ -20,9 +20,9 @@ object World {
 
   def origin: WorldLocation = WorldLocation(0,0)
 
-  def randomLocation(): WorldLocation = WorldLocation(nextInt(width), nextInt(heigth))
+  def randomLocation(): WorldLocation = WorldLocation(nextInt(width), nextInt(height))
 
-  def heigth: Int = 75
-  def width: Int = 100
+  def height: Int = 25
+  def width: Int = 25
 
 }

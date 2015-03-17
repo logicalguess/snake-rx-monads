@@ -13,7 +13,7 @@ class GameStateMonad(listener: ActorRef) extends Actor {
   def reset(snakeOpt: Option[Snake]) {
     playground = Playground(
       WorldLocation(0, 0),
-      WorldLocation(World.width - 1, World.heigth - 1),
+      WorldLocation(World.width - 1, World.height - 1),
       randomLocation(),
       snakeOpt.getOrElse(Snake(Position(15, 15, North) :: Nil)))
 
@@ -27,37 +27,30 @@ class GameStateMonad(listener: ActorRef) extends Actor {
   def receive = monad
 
   def process: Receive = {
-    case Refresh() => {
+    case Refresh() =>
       playground = processDirection(Unknown)(playground)
       notifyListener(playground)
-    }
-    case UpdateDirection(to) => {
+    case UpdateDirection(to) =>
       playground = processDirection(toDirection(to))(playground)
       notifyListener(playground)
-    }
   }
 
   def monad: Receive = {
-    case Refresh() => {
+    case Refresh() =>
       state = state.flatMap(_ => compileDirection(Unknown))
       notifyListener(state.run(playground)._1)
-
-    }
-    case UpdateDirection(to) => {
+    case UpdateDirection(to) =>
       state = state.flatMap(_ => compileDirection(toDirection(to)))
       notifyListener(state.run(playground)._1)
-    }
   }
 
   def compile: Receive = {
-    case Refresh() => {
+    case Refresh() =>
       playground = compileDirection(Unknown).run(playground)._1
       notifyListener(playground)
-    }
-    case UpdateDirection(to) => {
+    case UpdateDirection(to) =>
       playground = compileDirection(toDirection(to)).run(playground)._1
       notifyListener(playground)
-    }
   }
 
 
@@ -67,12 +60,11 @@ class GameStateMonad(listener: ActorRef) extends Actor {
     listener ! Updated(s.snake.positions.map(_.point), s.apple)
   }
 
-  def processDirection(d: Direction)(s: Playground): Playground = {
+  def processDirection(dir: Direction)(s: Playground): Playground = {
     val pos = s.snake.currentPosition
-    val next = d match {
-      case d if (d == Unknown || d == pos.direction) => {
+    val next = dir match {
+      case d if d == Unknown || d == pos.direction =>
         pos.move(s)
-      }
       case d => pos.turn(d)
     }
 

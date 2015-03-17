@@ -8,12 +8,12 @@ object GraphicConverters {
 
   def converted(length: Int): Int = length * factor
 
-  def converted(location: WorldLocation): ScreenLocation = diplayPointFrom(location)
+  def converted(location: WorldLocation): ScreenLocation = displayPointFrom(location)
 
-  def converted(segment: List[WorldLocation]): List[ScreenLocation] = segment.map(diplayPointFrom(_))
+  def converted(segment: List[WorldLocation]): List[ScreenLocation] = segment.map(displayPointFrom)
 
 
-  def diplayPointFrom(location: WorldLocation): ScreenLocation = {
+  def displayPointFrom(location: WorldLocation): ScreenLocation = {
     ScreenLocation(location.x * factor, location.y * factor, factor, factor)
   }
 
