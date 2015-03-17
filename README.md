@@ -24,15 +24,14 @@ GameStateVars.scala
             apple = Apple(randomLocation())
             snake = fromSnake.grown
           case head :: tail if tail.contains(head) =>
-            listener ! ShowMessage("You lose")
+            Game.displayMessage("You lose")
             reset()
           case head :: tail if tail.size == World.winLength =>
-            listener ! ShowMessage("You win")
+            Game.displayMessage("You win")
             reset()
           case _ => snake = fromSnake.moved
         }
-
-        listener ! Updated(snake.body, apple.location)
+        Game.view.update(converted(snake.body), converted(apple.location))
       }
 
       def updateDirectionOf(withSnake: Snake, to: WorldLocation) {
@@ -51,7 +50,7 @@ GameStateRX.scala
 
       snakeObservable.combineLatest(appleObservable).subscribe(
         pair => {
-          listener ! Updated(pair._1.body, pair._2)
+          Game.view.update(converted(pair._1.body), converted(pair._2))
         },
         (t: Throwable) =>  t.printStackTrace(),
         () => {}
@@ -117,12 +116,12 @@ GameStateMonad.scala
       def monad: Receive = {
         case Refresh() => {
           state = state.flatMap(_ => compileDirection(Unknown))
-          notifyListener(state.run(playground)._1)
+          updateView(state.run(playground)._1)
 
         }
         case UpdateDirection(to) => {
           state = state.flatMap(_ => compileDirection(toDirection(to)))
-          notifyListener(state.run(playground)._1)
+          updateView(state.run(playground)._1)
         }
       }
 ##Conclusions

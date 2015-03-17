@@ -28,18 +28,6 @@ import scala.swing.event.KeyPressed
     }
   }
 
-class ModelListener extends Actor {
-  import GraphicConverters._
-
-  def receive = {
-    case Updated(snake, apple) =>
-      Game.view.update(converted(snake), converted(apple))
-    case ShowMessage(text) =>
-      Game.displayMessage(text)
-  }
-}
-
-
 class Board(handle: => (Value) => Unit ) extends Panel {
   var doPaint: ((Graphics2D) => Unit) = (onGraphics) => {}
   preferredSize = new Dimension(GraphicConverters.converted(World.width), GraphicConverters.converted(World.height))
@@ -99,7 +87,7 @@ class GameC(model: ActorRef, val view: Board) extends SimpleSwingApplication {
 
 class MVC(stateClass: Class[_]) extends  {
   val system: ActorSystem = akka.actor.ActorSystem.create()
-  val model = system.actorOf(Props(stateClass, system.actorOf(Props(classOf[ModelListener]))))
+  val model = system.actorOf(Props(stateClass))
   val controller = system.actorOf(Props(classOf[BoardDriver], model))
   val view = new Board((key: Value) => controller ! ReceivedPressed(key))
 }

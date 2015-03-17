@@ -1,11 +1,12 @@
 package logicalguess.snake
 
+import logicalguess.snake.GraphicConverters._
 import logicalguess.snake.World._
 import akka.actor.{ActorRef, Actor}
 import scalaio.State
 
 
-class GameStateMonad(listener: ActorRef) extends Actor {
+class GameStateMonad extends Actor {
 
   var playground: Playground = _
   var state: State[Playground, Score] = _
@@ -29,35 +30,35 @@ class GameStateMonad(listener: ActorRef) extends Actor {
   def process: Receive = {
     case Refresh() =>
       playground = processDirection(Unknown)(playground)
-      notifyListener(playground)
+      updateView(playground)
     case UpdateDirection(to) =>
       playground = processDirection(toDirection(to))(playground)
-      notifyListener(playground)
+      updateView(playground)
   }
 
   def monad: Receive = {
     case Refresh() =>
       state = state.flatMap(_ => compileDirection(Unknown))
-      notifyListener(state.run(playground)._1)
+      updateView(state.run(playground)._1)
     case UpdateDirection(to) =>
       state = state.flatMap(_ => compileDirection(toDirection(to)))
-      notifyListener(state.run(playground)._1)
+      updateView(state.run(playground)._1)
   }
 
   def compile: Receive = {
     case Refresh() =>
       playground = compileDirection(Unknown).run(playground)._1
-      notifyListener(playground)
+      updateView(playground)
     case UpdateDirection(to) =>
       playground = compileDirection(toDirection(to)).run(playground)._1
-      notifyListener(playground)
+      updateView(playground)
   }
 
 
 
 
-  def notifyListener(s: Playground): Unit = {
-    listener ! Updated(s.snake.positions.map(_.point), s.apple)
+  def updateView(s: Playground): Unit = {
+    Game.view.update(converted(s.snake.positions.map(_.point)), converted(s.apple))
   }
 
   def processDirection(dir: Direction)(s: Playground): Playground = {

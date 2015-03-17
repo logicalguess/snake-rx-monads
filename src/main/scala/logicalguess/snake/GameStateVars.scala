@@ -1,5 +1,6 @@
 package logicalguess.snake
 
+import logicalguess.snake.GraphicConverters._
 import logicalguess.snake.World._
 import akka.actor.{ActorSystem, Props, ActorRef, Actor}
 
@@ -12,7 +13,7 @@ case class UpdateDirection(to: WorldLocation) extends StateMessage
 case class Updated(snake: List[WorldLocation], apple: WorldLocation) extends StateMessage
 
 
-class GameStateVars(listener: ActorRef) extends Actor {
+class GameStateVars extends Actor {
 
   sealed trait Entity
 
@@ -42,15 +43,14 @@ class GameStateVars(listener: ActorRef) extends Actor {
         apple = Apple(randomLocation())
         snake = fromSnake.grown
       case head :: tail if tail.contains(head) =>
-        listener ! ShowMessage("You lose")
+        Game.displayMessage("You lose")
         reset()
       case head :: tail if tail.size == World.winLength =>
-        listener ! ShowMessage("You win")
+        Game.displayMessage("You win")
         reset()
       case _ => snake = fromSnake.moved
     }
-
-    listener ! Updated(snake.body, apple.location)
+    Game.view.update(converted(snake.body), converted(apple.location))
   }
 
   def updateDirectionOf(withSnake: Snake, to: WorldLocation) {

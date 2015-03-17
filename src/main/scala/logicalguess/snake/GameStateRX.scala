@@ -1,20 +1,21 @@
 package logicalguess.snake
 
+import logicalguess.snake.GraphicConverters._
 import logicalguess.snake.World._
-import akka.actor.{ActorRef, Actor}
+import akka.actor.Actor
 import rx.lang.scala.subjects.PublishSubject
 import rx.lang.scala.{Subject, Observable}
 import scala.concurrent.duration.Duration
 import java.util.concurrent.TimeUnit
 
-class GameStateRX(listener: ActorRef) extends Actor {
+class GameStateRX extends Actor {
 
   sealed trait Event
   case class Turn(direction: WorldLocation) extends Event
   case class Grow() extends Event
   case class Move() extends Event
 
-  val events: PublishSubject[Event] = PublishSubject[Event]
+  val events: PublishSubject[Event] = PublishSubject[Event]()
 
   val snakeObservable = createSnake(Snake(List(origin), Direction.Right), events)
 
@@ -22,7 +23,7 @@ class GameStateRX(listener: ActorRef) extends Actor {
 
   snakeObservable.combineLatest(appleObservable).subscribe(
     pair => {
-      listener ! Updated(pair._1.body, pair._2)
+      Game.view.update(converted(pair._1.body), converted(pair._2))
     },
     (t: Throwable) =>  t.printStackTrace(),
     () => {}
@@ -31,7 +32,7 @@ class GameStateRX(listener: ActorRef) extends Actor {
   val tick = Observable.interval(Duration(150, TimeUnit.MILLISECONDS))
 
   tick.subscribe(
-    (_ => events.onNext(Move())),
+    _ => events.onNext(Move()),
     (t: Throwable) => println("tick error : " + t),
     () => {}
   )
@@ -48,10 +49,9 @@ class GameStateRX(listener: ActorRef) extends Actor {
 
   def createApple(init: WorldLocation, snakeObservable: Observable[Snake], events: Subject[Event, Event]): Observable[WorldLocation] = {
     snakeObservable.scan(randomLocation())((loc: WorldLocation, snake: Snake) => snake.head match {
-      case head if (head == loc) => {
+      case head if head == loc =>
         events.onNext(Grow())
         randomLocation()
-      }
       case _ => loc
     })
   }
