@@ -1,6 +1,5 @@
 package logicalguess.snake
 
-import logicalguess.snake.GraphicConverters._
 import logicalguess.snake.World._
 import akka.actor.Actor
 import rx.lang.scala.subjects.PublishSubject
@@ -23,7 +22,7 @@ class GameStateRX extends Actor {
 
   snakeObservable.combineLatest(appleObservable).subscribe(
     pair => {
-      Game.view.update(converted(pair._1.body), converted(pair._2))
+      Game.update(pair._1.body, pair._2)
     },
     (t: Throwable) =>  t.printStackTrace(),
     () => {}

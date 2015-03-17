@@ -9,24 +9,7 @@ import logicalguess.snake.GraphicConverters._
 import scala.swing.event.KeyPressed
 
 
-  case class ShowMessage(text: String)
-  case class ReceivedPressed(keyCode: Value)
-
-  class BoardDriver(model: ActorRef) extends Actor {
-    import World._
-
-    val directions = Map[Value, WorldLocation](
-      Left -> Direction.Left,
-      Right -> Direction.Right,
-      Up -> Direction.Up,
-      Down -> Direction.Down
-    )
-
-    def receive = {
-      case ReceivedPressed(key) =>
-        model ! UpdateDirection(directions(key))
-    }
-  }
+case class ShowMessage(text: String)
 
 class Board(handle: => (Value) => Unit ) extends Panel {
   var doPaint: ((Graphics2D) => Unit) = (onGraphics) => {}
@@ -61,7 +44,7 @@ class Board(handle: => (Value) => Unit ) extends Panel {
   }
 }
 
-class GameC(model: ActorRef, val view: Board) extends SimpleSwingApplication {
+class GameApp(model: ActorRef, val view: Board) extends SimpleSwingApplication {
 
   def displayMessage(text: String) {
     showMessage(parent = view, message = text)
@@ -85,16 +68,24 @@ class GameC(model: ActorRef, val view: Board) extends SimpleSwingApplication {
   }
 }
 
-class MVC(stateClass: Class[_]) extends  {
+class Config(stateClass: Class[_]) extends  {
+  import World._
+
+  val directions = Map[Value, WorldLocation](
+    Left -> Direction.Left,
+    Right -> Direction.Right,
+    Up -> Direction.Up,
+    Down -> Direction.Down
+  )
+
   val system: ActorSystem = akka.actor.ActorSystem.create()
   val model = system.actorOf(Props(stateClass))
-  val controller = system.actorOf(Props(classOf[BoardDriver], model))
-  val view = new Board((key: Value) => controller ! ReceivedPressed(key))
+  val view = new Board((key: Value) => model ! UpdateDirection(directions(key)))
 }
 
 //change the class to one of GameStateVars, GameStateRX or GameStateMonad
-object GameMVC extends MVC(classOf[GameStateRX])
+object cfg extends Config(classOf[GameStateRX])
 
-object Game extends GameC(GameMVC.model, GameMVC.view)
+object Game extends GameApp(cfg.model, cfg.view)
 
 

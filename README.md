@@ -31,7 +31,7 @@ GameStateVars.scala
             reset()
           case _ => snake = fromSnake.moved
         }
-        Game.view.update(converted(snake.body), converted(apple.location))
+        Game.update(snake.body, apple.location)
       }
 
       def updateDirectionOf(withSnake: Snake, to: WorldLocation) {
@@ -50,7 +50,7 @@ GameStateRX.scala
 
       snakeObservable.combineLatest(appleObservable).subscribe(
         pair => {
-          Game.view.update(converted(pair._1.body), converted(pair._2))
+          Game.update(pair._1.body, pair._2)
         },
         (t: Throwable) =>  t.printStackTrace(),
         () => {}

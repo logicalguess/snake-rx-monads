@@ -50,7 +50,7 @@ class GameStateVars extends Actor {
         reset()
       case _ => snake = fromSnake.moved
     }
-    Game.view.update(converted(snake.body), converted(apple.location))
+    Game.update(snake.body, apple.location)
   }
 
   def updateDirectionOf(withSnake: Snake, to: WorldLocation) {

@@ -58,7 +58,7 @@ class GameStateMonad extends Actor {
 
 
   def updateView(s: Playground): Unit = {
-    Game.view.update(converted(s.snake.positions.map(_.point)), converted(s.apple))
+    Game.update(s.snake.positions.map(_.point), s.apple)
   }
 
   def processDirection(dir: Direction)(s: Playground): Playground = {
