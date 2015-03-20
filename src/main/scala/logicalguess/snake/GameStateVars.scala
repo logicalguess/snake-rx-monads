@@ -1,8 +1,7 @@
 package logicalguess.snake
 
-import logicalguess.snake.GraphicConverters._
 import logicalguess.snake.World._
-import akka.actor.{ActorSystem, Props, ActorRef, Actor}
+import akka.actor.Actor
 
 sealed trait StateMessage
 
@@ -15,9 +14,7 @@ case class Updated(snake: List[WorldLocation], apple: WorldLocation) extends Sta
 
 class GameStateVars extends Actor {
 
-  sealed trait Entity
-
-  case class Snake(body: List[WorldLocation], direction: WorldLocation) extends Entity {
+  case class Snake(body: List[WorldLocation], direction: WorldLocation) {
     def go(toDirection: WorldLocation): Snake = Snake(body, toDirection)
     def moved: Snake = Snake(ahead :: body.take(body.size - 1), direction)
     def grown: Snake = Snake(ahead :: body, direction)
@@ -25,7 +22,7 @@ class GameStateVars extends Actor {
     def head: WorldLocation = body.head
   }
 
-  case class Apple(location: WorldLocation) extends Entity
+  case class Apple(location: WorldLocation)
 
 
   var snake: Snake = _
