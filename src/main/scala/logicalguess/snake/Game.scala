@@ -84,7 +84,7 @@ class Config(stateClass: Class[_]) extends  {
 }
 
 //change the class to one of GameStateVars, GameStateRX or GameStateMonad
-object cfg extends Config(classOf[GameStateVars])
+object cfg extends Config(classOf[GameStateRX])
 
 object Game extends GameApp(cfg.model, cfg.view)
 
